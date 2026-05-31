@@ -1,4 +1,3 @@
-
 -- Databricks notebook source
 -- ==============================================================================
 -- SCRIPT: 00_unity_catalog_setup.sql
