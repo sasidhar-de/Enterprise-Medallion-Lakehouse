@@ -8,14 +8,14 @@
 > **Business Objective:** Engineered a self-healing, petabyte-ready Data Intelligence platform to process enterprise retail data (TPC-DS), tracking customer churn and executive revenue metrics with sub-second dashboard rendering.
 
 ## 📑 Table of Contents
-* [📊 Executive Dashboard (Live Data Preview)](#executive-dashboard-live-data-preview)
-* [🧠 Architectural Blueprint](#architectural-blueprint)
-  * [🥉 Bronze Vault (Raw & Idempotent)](#bronze-vault-raw--idempotent)
-  * [🥈 Silver Clean Room (SCD Type 2)](#silver-clean-room-scd-type-2--incremental-extraction)
-  * [🥇 Gold Data Marts (Dual-Engine)](#gold-data-marts-dual-engine-compute)
-* [⚙️ Performance Engineering & Cloud Economics](#performance-engineering--cloud-economics)
-  * [🔬 Spark UI Profiling: Eradicating Disk Spill](#spark-ui-profiling-eradicating-disk-spill)
-* [🚀 Infrastructure as Code (IaC) & CI/CD](#infrastructure-as-code-iac--cicd)
+* [📊 Executive Dashboard (Live Data Preview)](#📊-executive-dashboard-live-data-preview)
+* [🧠 Architectural Blueprint](#🧠-architectural-blueprint)
+  * [🥉 Bronze Vault (Raw & Idempotent)](#🥉-bronze-vault-raw--idempotent)
+  * [🥈 Silver Clean Room (SCD Type 2)](#🥈-silver-clean-room-scd-type-2--incremental-extraction)
+  * [🥇 Gold Data Marts (Dual-Engine)](#🥇-gold-data-marts-dual-engine-compute)
+* [⚙️ Performance Engineering & Cloud Economics](#⚙️-performance-engineering--cloud-economics)
+  * [🔬 Spark UI Profiling: Eradicating Disk Spill](#🔬-spark-ui-profiling-eradicating-disk-spill)
+* [🚀 Infrastructure as Code (IaC) & CI/CD](#🚀-infrastructure-as-code-iac--cicd)
 
 ---
 
