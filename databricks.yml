@@ -8,30 +8,33 @@ bundle:
 
 resources:
   jobs:
+    # ----------------------------------------------------------------------
+    # JOB 1: THE DAILY INGESTION DAG (Runs via GitHub Actions)
+    # ----------------------------------------------------------------------
     daily_batch_pipeline:
       name: "Enterprise Daily Batch Pipeline"
       
-      # The Ephemeral Hardware Definition (With Safety Limits)
       job_clusters:
         - job_cluster_key: "staff_de_cluster"
           new_cluster:
-            spark_version: "14.3.x-scala2.12"
-            node_type_id: "Standard_DS3_v2"
+            spark_version: "17.3.x-scala2.13"
+            node_type_id: "Standard_D4ds_v5"
             num_workers: 4
+            runtime_engine: "PHOTON"
+            data_security_mode: "USER_ISOLATION" 
+            azure_attributes:
+              availability: "SPOT_WITH_FALLBACK_AZURE"
             spark_conf:
               "spark.sql.shuffle.partitions": "1024"
               "spark.sql.adaptive.enabled": "true"
               "spark.sql.adaptive.coalescePartitions.enabled": "true"
 
-      # The Directed Acyclic Graph (DAG) Execution Plan
       tasks:
-        # STEP 0: Build the Environment (SQL)
         - task_key: "unity_catalog_setup"
           job_cluster_key: "staff_de_cluster"
           notebook_task:
             notebook_path: "./sql/00_unity_catalog_setup.sql"
 
-        # STEP 1: Ingest the Raw Data
         - task_key: "adls_to_bronze"
           depends_on:
             - task_key: "unity_catalog_setup"
@@ -39,7 +42,6 @@ resources:
           notebook_task:
             notebook_path: "./src/bronze/01_ingest_bronze.py"
 
-        # STEP 2A: Cleanse the Heavy Fact Table (Parallel)
         - task_key: "silver_sales"
           depends_on:
             - task_key: "adls_to_bronze"
@@ -47,7 +49,6 @@ resources:
           notebook_task:
             notebook_path: "./src/silver/02_silver_sales.py"
 
-        # STEP 2B: Cleanse the Dimension Catalogs (Parallel)
         - task_key: "silver_dimensions"
           depends_on:
             - task_key: "adls_to_bronze"
@@ -55,7 +56,6 @@ resources:
           notebook_task:
             notebook_path: "./src/silver/02_silver_dimensions.py"
 
-        # STEP 3: Build the Business Dashboards
         - task_key: "gold_business"
           depends_on:
             - task_key: "silver_sales"
@@ -63,3 +63,30 @@ resources:
           job_cluster_key: "staff_de_cluster"
           notebook_task:
             notebook_path: "./src/gold/03_gold_aggregations.py"
+
+    # ----------------------------------------------------------------------
+    # JOB 2: THE WEEKLY MAINTENANCE ROBOT (Runs on Autopilot)
+    # ----------------------------------------------------------------------
+    weekly_maintenance_pipeline:
+      name: "Enterprise Weekly Z-Order Maintenance"
+      
+      schedule:
+        quartz_cron_expression: "0 0 2 ? * SUN"
+        timezone_id: "Asia/Kolkata"
+        
+      job_clusters:
+        - job_cluster_key: "maintenance_cluster"
+          new_cluster:
+            spark_version: "17.3.x-scala2.13"
+            node_type_id: "Standard_D4ds_v5"
+            num_workers: 4 
+            runtime_engine: "PHOTON"
+            data_security_mode: "USER_ISOLATION"
+            azure_attributes:
+              availability: "SPOT_WITH_FALLBACK_AZURE"
+            
+      tasks:
+        - task_key: "zorder_optimization"
+          job_cluster_key: "maintenance_cluster"
+          notebook_task:
+            notebook_path: "./src/utils/99_table_maintenance.py"
