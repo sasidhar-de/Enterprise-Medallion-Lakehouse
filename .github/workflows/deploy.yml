@@ -21,7 +21,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-        run: databricks bundle deploy
+        run: databricks bundle deploy --force-lock
 
       - name: 🔥 Trigger the Medallion Pipeline
         env:
